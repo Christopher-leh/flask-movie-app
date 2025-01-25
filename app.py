@@ -202,10 +202,12 @@ def add_review(movie_id):
             flash("Ungültige Bewertung! Bitte eine Zahl zwischen 0.0 und 10.0 eingeben.", "danger")
 
     return redirect(url_for('movie_detail', movie_id=movie_id))
+@app.route('/delete_review/<int:review_id>', methods=['POST'])
+@login_required
 def delete_review(review_id):
     review = Review.query.get_or_404(review_id)
 
-    # Überprüfen, ob der aktuelle Nutzer die Bewertung geschrieben hat
+    # Überprüfung: Darf der Nutzer die Bewertung löschen?
     if review.user_id != current_user.id:
         flash("Du kannst nur deine eigenen Bewertungen löschen!", "danger")
         return redirect(url_for('movie_detail', movie_id=review.movie_id))
@@ -214,6 +216,7 @@ def delete_review(review_id):
     db.session.commit()
     flash("Bewertung gelöscht!", "success")
     return redirect(url_for('movie_detail', movie_id=review.movie_id))
+
 migrate = Migrate(app, db)
 
 
