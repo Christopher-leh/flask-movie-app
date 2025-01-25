@@ -16,7 +16,7 @@
     <ul class="list-group mt-3">
         {% for upcoming in upcoming_updates %}
             <li class="list-group-item">
-                <strong>{{ upcoming.expected_date }}</strong>: {{ upcoming.changes }}
+                </strong>{{ upcoming.changes }}
             </li>
         {% endfor %}
     </ul>
@@ -25,7 +25,7 @@
     <h2 class="mt-5">💬 Vorschläge & Kommentare</h2>
     <form action="{{ url_for('add_comment') }}" method="post">
         <div class="mb-3">
-            <label for="comment" class="form-label">Schreibe einen Vorschlag oder Kommentar:</label>
+            <label for="comment" class="form-label">Schreibe einen Vorschlag oder Kommentar (anonym):</label>
             <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Absenden</button>
