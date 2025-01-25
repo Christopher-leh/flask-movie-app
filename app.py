@@ -102,16 +102,19 @@ def load_user(user_id):
 @app.route('/')
 def index():
     all_movies = Movie.query.all()
-
+    if current_user.is_authenticated:
     # Watchlist: Alle Filme ohne Bewertung des aktuellen Nutzers
-    watchlist_movies = [movie for movie in all_movies if not Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
+        watchlist_movies = [movie for movie in all_movies if not Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
 
     # Bereits gesehen: Alle Filme mit einer Bewertung des aktuellen Nutzers
-    gesehen_movies = [movie for movie in all_movies if Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
+        gesehen_movies = [movie for movie in all_movies if Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
 
     # Beste Filme: Alle Filme, die mindestens eine Bewertung haben
-    best_movies = Movie.query.join(Review).group_by(Movie.id).all()
-
+        best_movies = Movie.query.join(Review).group_by(Movie.id).all()
+    else:
+        gesehen_movies = []
+        watchlist_movies = all_movies
+        best_movies = []
     # Durchschnittliche Bewertung berechnen
     for movie in best_movies:
         reviews = Review.query.filter_by(movie_id=movie.id).all()
