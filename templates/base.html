@@ -29,26 +29,35 @@
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">🎬 Filmdatenbank</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <form action="{{ url_for('logout') }}" method="get">
-                                <button type="submit" class="btn btn-outline-light">Logout</button>
-                            </form>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="btn btn-outline-light" href="{{ url_for('login') }}">Login</a>
-                            <a class="btn btn-outline-light" href="{{ url_for('register') }}">Registrieren</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">🎬 Filmdatenbank</a>
+        
+        <!-- Toggle-Button für Mobilgeräte -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Menü umschalten">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigationslinks -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <form action="{{ url_for('logout') }}" method="post">
+                            <button type="submit" class="btn btn-outline-light">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light me-2" href="{{ url_for('login') }}">Login</a>
+                        <a class="btn btn-outline-light" href="{{ url_for('register') }}">Registrieren</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
+
 
     <div class="container mt-4">
         {% block content %}{% endblock %}
