@@ -1,15 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class="container mt-4">
     <h2>📝 Update-Log</h2>
     <ul class="list-group mt-3">
         {% for update in updates %}
             <li class="list-group-item">
-                <strong>{{ update.date }}</strong>&nbsp;<strong>{{ update.time }}</strong>: {{ update.changes }}
+                <strong>{{ update.date }} {{ update.time }}</strong>: {{ update.changes }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2 class="mt-5">🚀 Kommende Änderungen</h2>
+    <ul class="list-group mt-3">
+        {% for upcoming in upcoming_updates %}
+            <li class="list-group-item">
+                <strong>{{ upcoming.expected_date }}</strong>: {{ upcoming.changes }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Kommentar-Funktion -->
+    <h2 class="mt-5">💬 Vorschläge & Kommentare</h2>
+    <form action="{{ url_for('add_comment') }}" method="post">
+        <div class="mb-3">
+            <label for="comment" class="form-label">Schreibe einen Vorschlag oder Kommentar:</label>
+            <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Absenden</button>
+    </form>
+
+    <!-- Anzeige der Kommentare -->
+    <ul class="list-group mt-3">
+        {% for comment in comments %}
+            <li class="list-group-item">
+                <strong>Anonym:</strong> {{ comment.text }} <br>
+                <small class="text-muted">{{ comment.date_posted.strftime('%d.%m.%Y %H:%M') }}</small>
             </li>
         {% endfor %}
     </ul>
 </div>
+
+
 {% endblock %}
 

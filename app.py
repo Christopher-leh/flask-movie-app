@@ -14,6 +14,7 @@ from forms import MovieForm, ReviewForm
 
 from flask_migrate import Migrate
 from models import db, Movie  # Stelle sicher, dass das importiert ist
+from datetime import datetime
 
 
 
@@ -246,6 +247,7 @@ def add_review(movie_id):
                 db.session.commit()
                 flash("Bewertung erfolgreich hinzugefügt!", "success")
             else:
+
                 flash("Bewertung muss zwischen 0.0 und 10.0 liegen.", "danger")
         except ValueError:
             flash("Ungültige Bewertung! Bitte eine Zahl zwischen 0.0 und 10.0 eingeben.", "danger")
@@ -336,9 +338,16 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    date_posted = db.Column(db.DateTime, default=datetime.utcnow)
+
 @app.route('/update-log')
 def update_log():
     updates = [
+        {"date": "25.01.2025", "time":"22:45 ", "changes": "Kommentarfunktion"},
+        {"date": "25.01.2025", "time":"22:15 ", "changes": "Neue Info auf der Startseite"},
         {"date": "25.01.2025", "time":"22:00 ", "changes": "Neue Liste: Meine Filme"},
         {"date": "25.01.2025", "time":"21:45 ", "changes": "Neue Listenunterteilung und Einzelansicht"},
         {"date": "25.01.2025", "time":"21:00 ", "changes": "Update log hinzugefügt"},
@@ -346,7 +355,26 @@ def update_log():
         {"date": "25.01.2025", "time": "20:00", "changes": "Filmliste und Bereits gesehen hinzugefügt"},
         {"date": "25.01.2025", "time": "19:30",  "changes": "Benutzer können nur eigene Filme löschen"},
     ]
-    return render_template('update_log.html', updates=updates)
+    upcoming_updates = [
+        {"changes": "Unterscheidung Serien und Filme"},
+        {"changes": "Filterfunktion für bessere übersichtlichkeit"}
+        ]
+
+    comments = Comment.query.order_by(Comment.date_posted.desc()).all()
+
+    return render_template('update_log.html', updates=updates, upcoming_updates=upcoming_updates, comments=comments)
+
+@app.route('/add_comment', methods=['POST'])
+def add_comment():
+    comment_text = request.form.get('comment')
+
+    if comment_text:
+        new_comment = Comment(text=comment_text)
+        db.session.add(new_comment)
+        db.session.commit()
+        flash("Dein Kommentar wurde erfolgreich hinzugefügt!", "success")
+
+    return redirect(url_for('update_log'))
 
 
 
