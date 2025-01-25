@@ -20,8 +20,19 @@ from models import db, Movie  # Stelle sicher, dass das importiert ist
 app = Flask(__name__)
 
 # Verbindung zur Datenbank (PostgreSQL von Render oder fallback zu SQLite)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///database.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL is None:
+    raise ValueError("❌ Fehler: DATABASE_URL ist nicht gesetzt! Stelle sicher, dass die PostgreSQL-Datenbank verbunden ist.")
+
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "supergeheimeschluessel123")
+
+
 
 db.init_app(app)  # Datenbank mit Flask-App verbinden
 
@@ -236,8 +247,13 @@ def logout():
 
 
 
-
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Datenbanktabellen erstellen
+        try:
+            db.create_all()
+            db.session.commit()
+            print("✅ Datenbanktabellen wurden erstellt oder aktualisiert!")
+        except Exception as e:
+            print(f"❌ Fehler bei der Datenbankerstellung: {e}")
+
     app.run(debug=True)
