@@ -359,6 +359,7 @@ def update_log():
         {"changes": "Unterscheidung Serien und Filme"},
         {"changes": "Filterfunktion für bessere übersichtlichkeit"},
         {"changes": "Besseres Layout, zb: Bestenliste als numerierte Liste auf Startseite(seitlich)"}
+
         ]
 
     comments = Comment.query.order_by(Comment.date_posted.desc()).all()
