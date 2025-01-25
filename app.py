@@ -20,7 +20,7 @@ from models import db, Movie  # Stelle sicher, dass das importiert ist
 app = Flask(__name__)
 
 # Verbindung zur Datenbank (PostgreSQL von Render oder fallback zu SQLite)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///movies.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///database.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)  # Datenbank mit Flask-App verbinden
