@@ -3,36 +3,35 @@
 {% block content %}
     <div class="card shadow-sm">
         {% if movie.image_filename %}
-            <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" 
-                 class="card-img-top img-fluid rounded shadow-sm" 
-                 style="max-width: 50%;" 
+            <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}"
+                 class="card-img-top img-fluid rounded shadow-sm"
+                 style="max-width: 50%;"
                  alt="{{ movie.title }}">
         {% else %}
-            <img src="{{ url_for('static', filename='uploads/default.jpg') }}" 
-                 class="card-img-top img-fluid rounded shadow-sm" 
-                 style="max-width: 50%;" 
+            <img src="{{ url_for('static', filename='uploads/default.jpg') }}"
+                 class="card-img-top img-fluid rounded shadow-sm"
+                 style="max-width: 50%;"
                  alt="Kein Bild verfügbar">
         {% endif %}
         <div class="card-body">
             <h1 class="card-title">{{ movie.title }}</h1>
             <p class="card-text"><strong>Erscheinungsjahr:</strong> {{ movie.release_year }}</p>
             <p class="card-text">{{ movie.description }}</p>
+            <p class="card-text"><small class="text-muted">Hinzugefügt von: {{ movie.added_by.username if movie.added_by else 'Unbekannt' }}</small></p>
             <a href="{{ url_for('index') }}" class="btn btn-secondary">Zurück zur Liste</a>
-            
+
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('edit_movie', movie_id=movie.id) }}" class="btn btn-warning">✏️ Bearbeiten</a>
             {% endif %}
         </div>
     </div>
 
-
-
     <h2 class="mt-4">Bewertungen</h2>
     {% for review in movie.reviews %}
         <div class="border p-3 mb-3 bg-light rounded">
             <strong>{{ review.user.username }}</strong> – ⭐ {{ review.rating }}/10
             <p>{{ review.comment }}</p>
-            
+
             {% if current_user.is_authenticated and review.user_id == current_user.id %}
                 <form action="{{ url_for('delete_review', review_id=review.id) }}" method="post">
                     <button type="submit" class="btn btn-danger btn-sm">Bewertung löschen</button>

@@ -136,7 +136,8 @@ def add_movie():
             title=form.title.data,
             description=form.description.data,
             release_year=form.release_year.data,
-            image_filename=filename  # Falls kein Bild hochgeladen wird, bleibt None
+            image_filename=filename, # Falls kein Bild hochgeladen wird, bleibt None
+           added_by_id=current_user.id # 🆕 Speichert die ID des eingeloggten Nutzers
         )
         
         db.session.add(new_movie)

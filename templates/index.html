@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1 class="text-center mb-4">🎬 Filmliste</h1>
-    
+
     <div class="row">
         {% for movie in movies %}
             <div class="col-md-4">
@@ -20,6 +20,7 @@
                         {% else %}
                             <p class="card-text">Noch keine Bewertungen</p>
                         {% endif %}
+                        <p class="card-text"><small class="text-muted">Hinzugefügt von: {{ movie.added_by.username if movie.added_by else 'Unbekannt' }}</small></p>
                         <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">Details</a>
                     </div>
                 </div>
