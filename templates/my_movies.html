@@ -3,9 +3,10 @@
 {% block content %}
 <div class="container mt-4">
     <h2>📌 Meine Filme</h2>
-    Alle Filme, die du hinzugefügt oder bewertet hast.
+
+    <!-- Falls der Benutzer noch keine Filme hinzugefügt hat -->
     {% if not movies %}
-        <p>Du hast noch keine Filme hinzugefügt oder bewertet.</p>
+        <p>Du hast noch keine Filme hinzugefügt.</p>
     {% else %}
         <div class="row">
             {% for movie in movies %}
@@ -19,13 +20,6 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ movie.title }}</h5>
                             <p class="card-text">Erscheinungsjahr: {{ movie.release_year }}</p>
-
-                            {% if movie.added_by_id == current_user.id %}
-                                <p class="text-success">✨ Du hast diesen Film hinzugefügt</p>
-                            {% elif movie in reviewed_movies %}
-                                <p class="text-info">⭐ Du hast diesen Film bewertet</p>
-                            {% endif %}
-
                             <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">Details</a>
                         </div>
                     </div>
@@ -35,3 +29,4 @@
     {% endif %}
 </div>
 {% endblock %}
+

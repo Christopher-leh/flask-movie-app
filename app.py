@@ -264,6 +264,23 @@ def delete_review(review_id):
     flash("Bewertung gelöscht!", "success")
     return redirect(url_for('movie_detail', movie_id=review.movie_id))
 
+@app.route('/my_movies')
+@login_required
+def my_movies():
+    # Filme, die der Nutzer hinzugefügt hat
+    added_movies = Movie.query.filter_by(added_by_id=current_user.id).all()
+
+    # Filme, die der Nutzer bewertet hat (distinct, um doppelte Filme zu vermeiden)
+    reviewed_movies = (
+        Movie.query.join(Review).filter(Review.user_id == current_user.id).distinct().all()
+    )
+
+    # Filme zusammenführen, dabei doppelte Einträge entfernen
+    all_my_movies = list({movie.id: movie for movie in added_movies + reviewed_movies}.values())
+
+    return render_template('my_movies.html', movies=all_my_movies)
+
+
 @app.route('/rated_movies')
 def rated_movies():
     rated_movies = (
@@ -319,6 +336,7 @@ def logout():
 @app.route('/update-log')
 def update_log():
     updates = [
+        {"date": "25.01.2025", "time":"22:00 ", "changes": "Neue Liste: Meine Filme"},
         {"date": "25.01.2025", "time":"21:45 ", "changes": "Neue Listenunterteilung und Einzelansicht"},
         {"date": "25.01.2025", "time":"21:00 ", "changes": "Update log hinzugefügt"},
         {"date": "25.01.2025", "time":"20:40 ", "changes": "Design verbessert, mehr Abstand zwischen Listen"},
