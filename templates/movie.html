@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="card shadow-sm">
+        {% if movie.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" 
+                 class="card-img-top img-fluid rounded shadow-sm" 
+                 style="max-width: 50%;" 
+                 alt="{{ movie.title }}">
+        {% else %}
+            <img src="{{ url_for('static', filename='uploads/default.jpg') }}" 
+                 class="card-img-top img-fluid rounded shadow-sm" 
+                 style="max-width: 50%;" 
+                 alt="Kein Bild verfügbar">
+        {% endif %}
+        <div class="card-body">
+            <h1 class="card-title">{{ movie.title }}</h1>
+            <p class="card-text"><strong>Erscheinungsjahr:</strong> {{ movie.release_year }}</p>
+            <p class="card-text">{{ movie.description }}</p>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Zurück zur Liste</a>
+            
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('edit_movie', movie_id=movie.id) }}" class="btn btn-warning">✏️ Bearbeiten</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+    <h2 class="mt-4">Bewertungen</h2>
+    {% for review in movie.reviews %}
+        <div class="border p-3 mb-3 bg-light rounded">
+            <strong>{{ review.user.username }}</strong> – ⭐ {{ review.rating }}/10
+            <p>{{ review.comment }}</p>
+            
+            {% if current_user.is_authenticated and review.user_id == current_user.id %}
+                <form action="{{ url_for('delete_review', review_id=review.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">Bewertung löschen</button>
+                </form>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>Noch keine Bewertungen vorhanden.</p>
+    {% endfor %}
+
+    {% if current_user.is_authenticated %}
+        <h3 class="mt-4">Bewertung hinzufügen</h3>
+        <form method="post" action="{{ url_for('add_review', movie_id=movie.id) }}" class="mt-3">
+            {{ form.hidden_tag() }}
+            <label for="rating">Bewertung (0.0 - 10.0):</label>
+            {{ form.rating(class="form-control") }}
+            <label for="comment">Kommentar:</label>
+            {{ form.comment(class="form-control") }}
+            <button type="submit" class="btn btn-primary mt-2">Bewertung abgeben</button>
+        </form>
+    {% else %}
+        <p class="mt-3"><a href="{{ url_for('login') }}">Melde dich an</a>, um eine Bewertung zu schreiben.</p>
+    {% endif %}
+{% endblock %}

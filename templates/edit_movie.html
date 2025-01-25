@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center">🎬 Film bearbeiten</h1>
+    <form method="post" enctype="multipart/form-data" class="mt-4">
+        {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+            <label for="title">Filmtitel:</label>
+            {{ form.title(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="description">Beschreibung:</label>
+            {{ form.description(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="release_year">Erscheinungsjahr:</label>
+            {{ form.release_year(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+            <label for="image">Neues Bild hochladen:</label>
+            <input type="file" name="image" class="form-control">
+        </div>
+
+        {% if movie.image_filename %}
+            <div class="text-center">
+                <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" 
+                     class="img-fluid rounded shadow-sm" 
+                     style="max-width: 50%;" alt="{{ movie.title }}">
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary mt-3">Speichern</button>
+        <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-secondary mt-3">Abbrechen</a>
+    </form>
+{% endblock %}

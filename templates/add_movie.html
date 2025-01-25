@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Film hinzufügen</title>
+</head>
+<body>
+    <h1>Film hinzufügen</h1>
+    <form method="post" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      
+      <label for="title">Titel:</label>
+      {{ form.title() }}
+      
+      <label for="description">Beschreibung:</label>
+      {{ form.description() }}
+      
+      <label for="release_year">Erscheinungsjahr:</label>
+      {{ form.release_year() }}
+  
+      <label for="image">Filmcover:</label>
+      {{ form.image() }}  <!-- Bild-Upload -->
+  
+      {{ form.submit() }}
+  </form>
+  
+</body>
+</html>
