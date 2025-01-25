@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>📝 Update-Log</h2>
+    <ul class="list-group mt-3">
+        {% for update in updates %}
+            <li class="list-group-item">
+                <strong>{{ update.date }}</strong>&nbsp;<strong>{{ update.time }}</strong>: {{ update.changes }}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+

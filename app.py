@@ -89,15 +89,31 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))  # Stellt sicher, dass Nutzer geladen wird
 
-@app.route('/')
-def index():
-    movies = Movie.query.all()
-    for movie in movies:
-        reviews = Review.query.filter_by(movie_id=movie.id).all()
-        avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
-        movie.avg_rating = avg_rating  # Dynamisches Attribut hinzufügen
+#@app.route('/')
+#def index():
+#    movies = Movie.query.all()
+#    for movie in movies:
+#        reviews = Review.query.filter_by(movie_id=movie.id).all()
+#        avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
+#        movie.avg_rating = avg_rating  # Dynamisches Attribut hinzufügen
 
     return render_template('index.html', movies=movies)
+
+@app.route('/')
+@login_required
+def index():
+    all_movies = Movie.query.all()
+
+    for movie in all_movies:
+        reviews = Review.query.filter_by(movie_id=movie.id).all()
+        avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
+        movie.avg_rating = avg_rating  # Durchschnittsbewertung als Attribut speichern
+
+    watchlist = [movie for movie in all_movies if not Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
+    bestenliste = [movie for movie in all_movies if Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
+
+    return render_template('index.html', watchlist=watchlist, bestenliste=bestenliste)
+
 
 
 @app.route('/movie/<int:movie_id>')
@@ -149,23 +165,29 @@ def add_movie():
     return render_template('add_movie.html', form=form)
 
 
+
 @app.route('/delete_movie/<int:movie_id>', methods=['POST'])
 @login_required
 def delete_movie(movie_id):
     movie = Movie.query.get_or_404(movie_id)
 
+    # 🟢 Überprüfen, ob der Benutzer "Chris" ist oder den Film hinzugefügt hat
+    if current_user.username != "Chris" and movie.added_by_id != current_user.id:
+        flash("❌ Du kannst nur Filme löschen, die du hinzugefügt hast oder wenn du Admin bist!", "danger")
+        return redirect(url_for('index'))
+
     # Falls der Film ein Bild hat, dieses aus dem Upload-Ordner löschen
     if movie.image_filename:
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], movie.image_filename)
         if os.path.exists(image_path):
-            os.remove(image_path)  # Datei löschen
+            os.remove(image_path)
 
-    # Film aus der Datenbank entfernen
     db.session.delete(movie)
     db.session.commit()
-    
-    flash("Film wurde erfolgreich gelöscht!", "success")
+
+    flash("✅ Film wurde erfolgreich gelöscht!", "success")
     return redirect(url_for('index'))
+
 
 @app.route('/edit_movie/<int:movie_id>', methods=['GET', 'POST'])
 @login_required
@@ -243,6 +265,16 @@ migrate = Migrate(app, db)
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/update-log')
+def update_log():
+    updates = [
+        {"date": "25.01.2025", "time":"21:00 ", "changes": "Update log hinzugefügt"},
+        {"date": "25.01.2025", "time":"20:40 ", "changes": "Design verbessert, mehr Abstand zwischen Listen"},
+        {"date": "25.01.2025", "time": "20:00", "changes": "Filmliste und Bereits gesehen hinzugefügt"},
+        {"date": "25.01.2025", "time": "19:30",  "changes": "Benutzer können nur eigene Filme löschen"},
+    ]
+    return render_template('update_log.html', updates=updates)
 
 
 

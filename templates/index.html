@@ -3,8 +3,10 @@
 {% block content %}
     <h1 class="text-center mb-4">🎬 Filmliste</h1>
 
+    <div class="container mt-4">
+    <h2>📌 Filmliste</h2>
     <div class="row">
-        {% for movie in movies %}
+        {% for movie in watchlist %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
                     {% if movie.image_filename %}
@@ -15,11 +17,6 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ movie.title }}</h5>
                         <p class="card-text">Erscheinungsjahr: {{ movie.release_year }}</p>
-                        {% if movie.avg_rating is not none %}
-                            <p class="card-text"><strong>⭐ {{ movie.avg_rating }}/10</strong></p>
-                        {% else %}
-                            <p class="card-text">Noch keine Bewertungen</p>
-                        {% endif %}
                         <p class="card-text"><small class="text-muted">Hinzugefügt von: {{ movie.added_by.username if movie.added_by else 'Unbekannt' }}</small></p>
                         <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">Details</a>
                     </div>
@@ -27,6 +24,39 @@
             </div>
         {% endfor %}
     </div>
+
+
+
+<h2 class="mt-5 pt-3">⭐ Bereits gesehen</h2>
+<div class="row">
+    {% for movie in bestenliste %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                {% if movie.image_filename %}
+                    <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" class="card-img-top" alt="{{ movie.title }}">
+                {% else %}
+                    <img src="{{ url_for('static', filename='uploads/default.jpg') }}" class="card-img-top" alt="Kein Bild verfügbar">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text">Erscheinungsjahr: {{ movie.release_year }}</p>
+
+                    {% if movie.avg_rating is not none %}
+                        <p class="card-text"><strong>⭐ Durchschnitt: {{ movie.avg_rating }}/10</strong></p>
+                    {% else %}
+                        <p class="card-text">Noch keine Bewertungen</p>
+                    {% endif %}
+
+                    <p class="card-text"><small class="text-muted">Hinzugefügt von: {{ movie.added_by.username if movie.added_by else 'Unbekannt' }}</small></p>
+                    <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+
+
 
     <a href="{{ url_for('add_movie') }}" class="btn btn-success mt-4">➕ Film hinzufügen</a>
 {% endblock %}
