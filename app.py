@@ -358,7 +358,8 @@ def update_log():
     upcoming_updates = [
         {"changes": "Unterscheidung Serien und Filme"},
         {"changes": "Filterfunktion für bessere übersichtlichkeit"},
-        {"changes": "Besseres Layout, zb: Bestenliste als numerierte Liste auf Startseite(seitlich)"}
+        {"changes": "Besseres Layout, zb: Bestenliste als numerierte Liste auf Startseite(seitlich)"},
+        {"changes": "logout knopf fixen"}
 
         ]
 
