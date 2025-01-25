@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>✅ Bereits gesehene Filme</h2>
+    <div class="row">
+        {% for movie in watched_movies %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    {% if movie.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" class="card-img-top" alt="{{ movie.title }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='uploads/default.jpg') }}" class="card-img-top" alt="Kein Bild verfügbar">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.title }}</h5>
+                        <p class="card-text">Erscheinungsjahr: {{ movie.release_year }}</p>
+                        <p class="card-text"><strong>⭐ Durchschnittliche Bewertung: {{ movie.avg_rating }}/10</strong></p>
+                        <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

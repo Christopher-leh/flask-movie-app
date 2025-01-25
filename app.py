@@ -100,19 +100,28 @@ def load_user(user_id):
     return render_template('index.html', movies=movies)
 
 @app.route('/')
-@login_required
 def index():
     all_movies = Movie.query.all()
 
-    for movie in all_movies:
+    # Watchlist: Alle Filme ohne Bewertung des aktuellen Nutzers
+    watchlist_movies = [movie for movie in all_movies if not Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
+
+    # Bereits gesehen: Alle Filme mit einer Bewertung des aktuellen Nutzers
+    gesehen_movies = [movie for movie in all_movies if Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
+
+    # Beste Filme: Alle Filme, die mindestens eine Bewertung haben
+    best_movies = Movie.query.join(Review).group_by(Movie.id).all()
+
+    # Durchschnittliche Bewertung berechnen
+    for movie in best_movies:
         reviews = Review.query.filter_by(movie_id=movie.id).all()
         avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
-        movie.avg_rating = avg_rating  # Durchschnittsbewertung als Attribut speichern
+        movie.avg_rating = avg_rating
 
-    watchlist = [movie for movie in all_movies if not Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
-    bestenliste = [movie for movie in all_movies if Review.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()]
+    # Filme nach Bewertung absteigend sortieren
+    best_movies = sorted(best_movies, key=lambda x: x.avg_rating or 0, reverse=True)
 
-    return render_template('index.html', watchlist=watchlist, bestenliste=bestenliste)
+    return render_template('index.html', watchlist=watchlist_movies, gesehen=gesehen_movies, bestenliste=best_movies)
 
 
 
@@ -239,6 +248,7 @@ def add_review(movie_id):
             flash("Ungültige Bewertung! Bitte eine Zahl zwischen 0.0 und 10.0 eingeben.", "danger")
 
     return redirect(url_for('movie_detail', movie_id=movie_id))
+
 @app.route('/delete_review/<int:review_id>', methods=['POST'])
 @login_required
 def delete_review(review_id):
@@ -254,9 +264,49 @@ def delete_review(review_id):
     flash("Bewertung gelöscht!", "success")
     return redirect(url_for('movie_detail', movie_id=review.movie_id))
 
-migrate = Migrate(app, db)
+@app.route('/rated_movies')
+def rated_movies():
+    rated_movies = (
+        Movie.query
+        .join(Review)
+        .group_by(Movie.id)
+        .order_by(db.func.avg(Review.rating).desc())  # Sortiert nach Bewertung
+        .all()
+    )
+
+    # Durchschnittliche Bewertung berechnen
+    for movie in rated_movies:
+        reviews = Review.query.filter_by(movie_id=movie.id).all()
+        avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
+        movie.avg_rating = avg_rating
+
+    return render_template('rated_movies.html', rated_movies=rated_movies)
 
 
+
+@app.route('/all_movies')
+def all_movies():
+    movies = Movie.query.all()  # Alle Filme abrufen
+    return render_template('all_movies.html', movies=movies)
+
+@app.route('/watched_movies')
+@login_required
+def watched_movies():
+    watched_movies = (
+        Movie.query
+        .join(Review)
+        .filter(Review.user_id == current_user.id)
+        .group_by(Movie.id)
+        .all()
+    )
+
+    # Durchschnittliche Bewertung berechnen
+    for movie in watched_movies:
+        reviews = Review.query.filter_by(movie_id=movie.id).all()
+        avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
+        movie.avg_rating = avg_rating
+
+    return render_template('watched_movies.html', watched_movies=watched_movies)
 
 
 
@@ -269,6 +319,7 @@ def logout():
 @app.route('/update-log')
 def update_log():
     updates = [
+        {"date": "25.01.2025", "time":"21:45 ", "changes": "Neue Listenunterteilung und Einzelansicht"},
         {"date": "25.01.2025", "time":"21:00 ", "changes": "Update log hinzugefügt"},
         {"date": "25.01.2025", "time":"20:40 ", "changes": "Design verbessert, mehr Abstand zwischen Listen"},
         {"date": "25.01.2025", "time": "20:00", "changes": "Filmliste und Bereits gesehen hinzugefügt"},
@@ -278,7 +329,7 @@ def update_log():
 
 
 
-
+migrate = Migrate(app, db)
 
 if __name__ == '__main__':
     with app.app_context():

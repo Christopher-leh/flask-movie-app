@@ -35,16 +35,33 @@
     <div class="container">
         <a class="navbar-brand" href="{{ url_for('index') }}">🎬 Filmdatenbank</a>
 
+        <!-- Toggle-Button für Mobilgeräte -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Menü umschalten">
             <span class="navbar-toggler-icon"></span>
         </button>
 
+        <!-- Navigationslinks -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item me-3">
-                    <a class="nav-link" href="{{ url_for('update_log') }}">📝 Update-Log</a>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('all_movies') }}">📜 Alle Filme</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('watched_movies') }}">✅ Bereits gesehen</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('rated_movies') }}">⭐ Beste Filme</a>
+                </li>
+
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('update_log') }}">✍️ Änderungen</a>
+                </li>
+
+
 
                 {% if current_user.is_authenticated %}
                     <li class="nav-item">
@@ -57,11 +74,15 @@
                         <a class="btn btn-outline-light me-2" href="{{ url_for('login') }}">Login</a>
                         <a class="btn btn-outline-light" href="{{ url_for('register') }}">Registrieren</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('update_log') }}">📝 Update-Log</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>
     </div>
 </nav>
+
 
 
 
