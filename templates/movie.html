@@ -2,17 +2,13 @@
 
 {% block content %}
     <div class="card shadow-sm">
-        {% if movie.image_filename %}
-            <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}"
-                 class="card-img-top img-fluid rounded shadow-sm"
-                 style="max-width: 50%;"
-                 alt="{{ movie.title }}">
+        {% if movie.image_url %}
+            <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.title }}">
         {% else %}
-            <img src="{{ url_for('static', filename='uploads/default.jpg') }}"
-                 class="card-img-top img-fluid rounded shadow-sm"
-                 style="max-width: 50%;"
-                 alt="Kein Bild verfügbar">
+            <img src="https://res.cloudinary.com/db9pb8opj/image/upload/v1737889807/ytk0jedy8jsbazczudbt.jpg"
+            class="card-img-top" alt="Kein Bild verfügbar">
         {% endif %}
+
         <div class="card-body">
             <h1 class="card-title">{{ movie.title }}</h1>
             <p class="card-text"><strong>Erscheinungsjahr:</strong> {{ movie.release_year }}</p>

@@ -11,11 +11,12 @@
             {% for movie in watchlist %}
                 <div class="col-md-4">
                     <div class="card mb-4 shadow-sm">
-                        {% if movie.image_filename %}
-                            <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" class="card-img-top" alt="{{ movie.title }}">
+                        {% if movie.image_url %}
+                            <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.title }}">
                         {% else %}
-                            <img src="{{ url_for('static', filename='uploads/default.jpg') }}" class="card-img-top" alt="Kein Bild verfügbar">
+                            <img src="https://res.cloudinary.com/db9pb8opj/image/upload/v1737889807/ytk0jedy8jsbazczudbt.jpg" class="card-img-top" alt="Kein Bild verfügbar">
                         {% endif %}
+
                         <div class="card-body">
                             <h5 class="card-title">{{ movie.title }}</h5>
                             <p class="card-text">Erscheinungsjahr: {{ movie.release_year }}</p>
@@ -37,10 +38,10 @@
             {% for movie in gesehen %}
                 <div class="col-md-4">
                     <div class="card mb-4 shadow-sm">
-                        {% if movie.image_filename %}
-                            <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" class="card-img-top" alt="{{ movie.title }}">
+                        {% if movie.image_url %}
+                            <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.title }}">
                         {% else %}
-                            <img src="{{ url_for('static', filename='uploads/default.jpg') }}" class="card-img-top" alt="Kein Bild verfügbar">
+                            <img src="https://res.cloudinary.com/db9pb8opj/image/upload/v1737889807/ytk0jedy8jsbazczudbt.jpg" class="card-img-top" alt="Kein Bild verfügbar">
                         {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ movie.title }}</h5>
@@ -60,10 +61,10 @@
             {% for movie in bestenliste %}
                 <div class="col-md-4">
                     <div class="card mb-4 shadow-sm">
-                        {% if movie.image_filename %}
-                            <img src="{{ url_for('static', filename='uploads/' + movie.image_filename) }}" class="card-img-top" alt="{{ movie.title }}">
+                        {% if movie.image_url %}
+                            <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.title }}">
                         {% else %}
-                            <img src="{{ url_for('static', filename='uploads/default.jpg') }}" class="card-img-top" alt="Kein Bild verfügbar">
+                            <img src="https://res.cloudinary.com/db9pb8opj/image/upload/v1737889807/ytk0jedy8jsbazczudbt.jpg" class="card-img-top" alt="Kein Bild verfügbar">
                         {% endif %}
                         <div class="card-body">
                             <h5 class="card-title">{{ movie.title }}</h5>

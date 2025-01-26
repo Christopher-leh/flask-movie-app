@@ -33,8 +33,8 @@ class Movie(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
     release_year = db.Column(db.Integer, nullable=True)
-    image_filename = db.Column(db.String(255), nullable=True)
-
+    #image_filename = db.Column(db.String(255), nullable=True)
+    image_url = db.Column(db.String(500), nullable=True)
     # Beziehung zur Review-Tabelle
     reviews = db.relationship('Review', backref='movie', lazy=True)
 

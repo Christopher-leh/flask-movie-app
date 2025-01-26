@@ -6,7 +6,7 @@ class MovieForm(FlaskForm):
     title = StringField("Titel", validators=[InputRequired()])
     description = TextAreaField("Beschreibung")
     release_year = IntegerField("Erscheinungsjahr")
-    image = FileField("Filmcover hochladen")  # Bild-Upload
+    image = FileField("Filmcover hochladen")
     submit = SubmitField("Film hinzufügen")
 
 class ReviewForm(FlaskForm):

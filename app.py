@@ -16,6 +16,8 @@ from flask_migrate import Migrate
 from models import db, Movie  # Stelle sicher, dass das importiert ist
 from datetime import datetime
 
+import cloudinary
+import cloudinary.uploader
 
 
 app = Flask(__name__)
@@ -147,6 +149,18 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+cloudinary.config(
+    cloud_name="db9pb8opj",
+    api_key="522919633999979",
+    api_secret="rmO2oUMfcPk1ip-FhBhiRk8ZE0s"
+)
+
+def upload_image(file):
+    """Lädt ein Bild zu Cloudinary hoch und gibt die URL zurück"""
+    result = cloudinary.uploader.upload(file)
+    return result['secure_url']  # Sichere URL des Bildes zurückgeben
+
+
 @app.route('/add_movie', methods=['GET', 'POST'])
 @login_required
 def add_movie():
@@ -155,17 +169,17 @@ def add_movie():
         file = form.image.data
         filename = None  # Standardwert setzen
         
-        if file and allowed_file(file.filename):  # Prüfen, ob Datei erlaubt ist
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)  # Bild speichern
+        if file and allowed_file(file.filename):
+            upload_result = cloudinary.uploader.upload(file)
+            filename = upload_result['secure_url']  # Speichert Cloudinary-URL statt lokale Datei
+
             
         # Neuen Film mit oder ohne Bild zur Datenbank hinzufügen
         new_movie = Movie(
             title=form.title.data,
             description=form.description.data,
             release_year=form.release_year.data,
-            image_filename=filename, # Falls kein Bild hochgeladen wird, bleibt None
+            image_url=filename, # Falls kein Bild hochgeladen wird, bleibt None
            added_by_id=current_user.id # 🆕 Speichert die ID des eingeloggten Nutzers
         )
         
@@ -176,6 +190,7 @@ def add_movie():
         return redirect(url_for('index'))
     
     return render_template('add_movie.html', form=form)
+
 
 
 
@@ -217,15 +232,16 @@ def edit_movie(movie_id):
         if 'image' in request.files:
             file = request.files['image']
             if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                movie.image_filename = filename  # Neues Bild speichern
+                # Bild zu Cloudinary hochladen
+                upload_result = cloudinary.uploader.upload(file)
+                movie.image_url = upload_result["secure_url"]  # Speichert neue Bild-URL
 
         db.session.commit()
         flash("Film wurde erfolgreich aktualisiert!", "success")
         return redirect(url_for('movie_detail', movie_id=movie.id))
 
     return render_template('edit_movie.html', form=form, movie=movie)
+
 
 @app.route('/movie/<int:movie_id>/review', methods=['POST'])
 @login_required  # Nutzer muss eingeloggt sein
@@ -346,6 +362,7 @@ class Comment(db.Model):
 @app.route('/update-log')
 def update_log():
     updates = [
+        {"date": "25.01.2025", "time":"22:45 ", "changes": "Bilder werden jetzt in einer Cloud gespeichert, sodass jeder alle Bilder sehen kann."},
         {"date": "25.01.2025", "time":"22:45 ", "changes": "logout repariert"},
         {"date": "25.01.2025", "time":"22:45 ", "changes": "Kommentarfunktion"},
         {"date": "25.01.2025", "time":"22:15 ", "changes": "Neue Info auf der Startseite"},
@@ -360,7 +377,6 @@ def update_log():
         {"changes": "Unterscheidung Serien und Filme"},
         {"changes": "Filterfunktion für bessere übersichtlichkeit"},
         {"changes": "Besseres Layout, zb: Bestenliste als numerierte Liste auf Startseite(seitlich)"},
-        {"changes": "Bilder fixen"}
 
         ]
 
