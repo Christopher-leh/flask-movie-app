@@ -332,7 +332,7 @@ def watched_movies():
 
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
@@ -346,6 +346,7 @@ class Comment(db.Model):
 @app.route('/update-log')
 def update_log():
     updates = [
+        {"date": "25.01.2025", "time":"22:45 ", "changes": "logout repariert"},
         {"date": "25.01.2025", "time":"22:45 ", "changes": "Kommentarfunktion"},
         {"date": "25.01.2025", "time":"22:15 ", "changes": "Neue Info auf der Startseite"},
         {"date": "25.01.2025", "time":"22:00 ", "changes": "Neue Liste: Meine Filme"},
@@ -359,7 +360,7 @@ def update_log():
         {"changes": "Unterscheidung Serien und Filme"},
         {"changes": "Filterfunktion für bessere übersichtlichkeit"},
         {"changes": "Besseres Layout, zb: Bestenliste als numerierte Liste auf Startseite(seitlich)"},
-        {"changes": "logout knopf fixen"}
+        {"changes": "Bilder fixen"}
 
         ]
 
