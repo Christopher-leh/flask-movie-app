@@ -44,6 +44,14 @@
         <!-- Navigationslinks -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+
+                {% if current_user.is_authenticated and current_user.username in ["Chris", "Lenaa"] %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('Lena_Chris') }}">🔒 Lena und Chris</a>
+                    </li>
+                {% endif %}
+
+
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('my_movies') }}">📌 Meine Filme</a>
                 </li>

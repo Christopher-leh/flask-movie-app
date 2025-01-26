@@ -60,11 +60,18 @@ class RegisterForm(FlaskForm):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
+        existing_user = User.query.filter_by(username=form.username.data).first()
+        if existing_user:
+            flash("Der Benutzername ist bereits vergeben. Bitte wähle einen anderen.", "danger")
+            return redirect(url_for('register'))
+
         hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         new_user = User(username=form.username.data, password=hashed_pw)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('login'))  # Nach Registrierung zum Login
+        flash("Registrierung erfolgreich! Bitte melde dich an.", "success")
+        return redirect(url_for('login'))
+
     return render_template('register.html', form=form)
 
 
@@ -345,6 +352,30 @@ def watched_movies():
         movie.avg_rating = avg_rating
 
     return render_template('watched_movies.html', watched_movies=watched_movies)
+
+# Definiere die Benutzer, die Zugriff auf die exklusive Liste haben
+ALLOWED_USERS = ["Chris", "Lenaa"]  # Setze die Namen der erlaubten Nutzer hier ein
+
+@app.route('/Lena_Chris')
+@login_required
+def Lena_Chris():
+    if current_user.username not in ALLOWED_USERS:
+        flash("Du hast keinen Zugriff auf diese Liste.", "danger")
+        return redirect(url_for('index'))
+
+    # Alle Filme von Chris & Lena abrufen
+    movies = Movie.query.filter(Movie.added_by.has(User.username.in_(ALLOWED_USERS))).all()
+
+    # Unbewertete Filme filtern
+    unreviewed_movies = [movie for movie in movies if not Review.query.filter_by(movie_id=movie.id).first()]
+
+    # Durchschnittliche Bewertung berechnen
+    for movie in movies:
+        reviews = Review.query.filter_by(movie_id=movie.id).all()
+        avg_rating = round(sum(r.rating for r in reviews) / len(reviews), 1) if reviews else None
+        movie.avg_rating = avg_rating
+
+    return render_template('Lena_Chris.html', movies=movies, unreviewed_movies=unreviewed_movies)
 
 
 

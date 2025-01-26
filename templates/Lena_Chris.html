@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>🎬 Lena & Chris' Filme</h2>
+
+    <!-- Toggle-Button -->
+    <button class="btn btn-primary mb-3" id="toggleButton">📌 Zeige nur unbewertete Filme</button>
+
+    <div class="row">
+        {% for movie in movies %}
+            <div class="col-md-4 movie-item reviewed">
+                <div class="card mb-4 shadow-sm">
+                    {% if movie.image_url %}
+                        <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.title }}">
+                    {% else %}
+                        <img src="https://res.cloudinary.com/db9pb8opj/image/upload/v1737889807/ytk0jedy8jsbazczudbt.jpg"
+                        class="card-img-top" alt="Kein Bild verfügbar">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.title }}</h5>
+                        <p class="card-text">Erscheinungsjahr: {{ movie.release_year }}</p>
+                        {% if movie.reviews|length > 0 %}
+                            <p class="card-text"><strong>⭐ Durchschnittliche Bewertung: {{ movie.avg_rating }}/10</strong></p>
+                        {% endif %}
+
+                        <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% for movie in unreviewed_movies %}
+            <div class="col-md-4 movie-item unreviewed d-none">
+                <div class="card mb-4 shadow-sm">
+                    {% if movie.image_url %}
+                        <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.title }}">
+                    {% else %}
+                        <img src="https://res.cloudinary.com/db9pb8opj/image/upload/v1737889807/ytk0jedy8jsbazczudbt.jpg"
+                        class="card-img-top" alt="Kein Bild verfügbar">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.title }}</h5>
+                        <p class="card-text">Erscheinungsjahr: {{ movie.release_year }}</p>
+                        {% if movie.avg_rating is not none %}
+                        <p class="card-text"><strong>⭐ Durchschnittliche Bewertung: {{ movie.avg_rating }}/10</strong></p>
+                        {% endif %}
+
+                        <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    document.getElementById('toggleButton').addEventListener('click', function() {
+        let reviewedMovies = document.querySelectorAll('.reviewed');
+        let unreviewedMovies = document.querySelectorAll('.unreviewed');
+
+        if (this.textContent.includes("unbewertete Filme")) {
+            reviewedMovies.forEach(movie => movie.classList.add('d-none'));
+            unreviewedMovies.forEach(movie => movie.classList.remove('d-none'));
+            this.textContent = "📌 Zeige alle Filme";
+        } else {
+            reviewedMovies.forEach(movie => movie.classList.remove('d-none'));
+            unreviewedMovies.forEach(movie => movie.classList.add('d-none'));
+            this.textContent = "📌 Zeige nur unbewertete Filme";
+        }
+    });
+</script>
+{% endblock %}
