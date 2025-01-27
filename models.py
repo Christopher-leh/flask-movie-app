@@ -17,8 +17,8 @@ class User(db.Model, UserMixin):
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Nutzer-ID speichern
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'), nullable=False)
+    user_id = db.Column(db.Integer,  db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)  # Nutzer-ID speichern
+    movie_id = db.Column(db.Integer,  db.ForeignKey('movie.id', ondelete="CASCADE"), nullable=False)
     rating = db.Column(db.Float, nullable=False)
     comment = db.Column(db.Text, nullable=True)
 

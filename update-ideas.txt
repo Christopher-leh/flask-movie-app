@@ -1,1 +1,2 @@
 wpeg
+wenn man kommentar/film löscht wird man nicht zur seite zurückgeleitet

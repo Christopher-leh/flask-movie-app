@@ -201,6 +201,8 @@ def add_movie():
 
 
 
+
+
 @app.route('/delete_movie/<int:movie_id>', methods=['POST'])
 @login_required
 def delete_movie(movie_id):
@@ -211,17 +213,23 @@ def delete_movie(movie_id):
         flash("❌ Du kannst nur Filme löschen, die du hinzugefügt hast oder wenn du Admin bist!", "danger")
         return redirect(url_for('index'))
 
-    # Falls der Film ein Bild hat, dieses aus dem Upload-Ordner löschen
-    if movie.image_filename:
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], movie.image_filename)
-        if os.path.exists(image_path):
-            os.remove(image_path)
+    # Falls der Film ein Bild in Cloudinary hat, dieses aus der Cloud löschen
+    if movie.image_url:
+        public_id = movie.image_url.split("/")[-1].split(".")[0]  # Cloudinary Public ID extrahieren
+        try:
+            cloudinary.api.delete_resources([public_id])  # Bild löschen
+        except Exception as e:
+            print(f"❌ Fehler beim Löschen des Bildes: {e}")
+
+    # Falls der Film Bewertungen hat, zuerst löschen
+    Review.query.filter_by(movie_id=movie.id).delete()
 
     db.session.delete(movie)
     db.session.commit()
 
     flash("✅ Film wurde erfolgreich gelöscht!", "success")
     return redirect(url_for('index'))
+
 
 
 @app.route('/edit_movie/<int:movie_id>', methods=['GET', 'POST'])
